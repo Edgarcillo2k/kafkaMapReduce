@@ -47,14 +47,8 @@ public class StartJobMain extends Configured implements Tool {
 					"CMP.origin origen," +
 					"CMP.destination destino," +
 					"CMP.date fecha," +
-					"CMP.rate monto;" +
-					"FROM busquedas CMP" +
-					"GROUP BY CMP.origin, CMP.destination" +
-					"INSERT OVERWRITE TABLE busquedas_hive" +
-					"SELECT" +
-					"CMP.origin origen," +
-					"CMP.destination destino," +
-					"CMP.date fecha;");
+					"CMP.rate monto;");
+			//busquedas_hive
 		} catch (SQLException throwables) {
 			throwables.printStackTrace();
 		}
@@ -67,12 +61,9 @@ public class StartJobMain extends Configured implements Tool {
 		args[0] = "Suma de montos por dias del mes por ruta";
 		args[1] = "/user/hive/warehouse/viajesdomesticoscr.db/busquedas_hive";
 		args[2] = "/user/hive/warehouse/viajesdomesticoscr.db/sumaBusquedas";
+		/*args[1] = "/user/hive/warehouse/viajesdomesticoscr.db/compras_hive";
+		args[2] = "/user/hive/warehouse/viajesdomesticoscr.db/sumaCompras";*/
 		int res = ToolRunner.run(new StartJobMain(), args);
-		args = new String[3];
-		args[0] = "Suma de montos por dias del mes por ruta";
-		args[1] = "/user/hive/warehouse/viajesdomesticoscr.db/compras_hive";
-		args[2] = "/user/hive/warehouse/viajesdomesticoscr.db/sumaCompras";
-		res = ToolRunner.run(new StartJobMain(), args);
 		try {
 			Class.forName(driverName);
 		} catch (ClassNotFoundException e) {
@@ -94,16 +85,6 @@ public class StartJobMain extends Configured implements Tool {
 		}
 		try {
 			stmt.execute("use viajesdomesticoscr;" +
-					"LOAD DATA INPATH '/user/hive/warehouse/viajesdomesticoscr.db/sumaBusquedas" +
-					"' OVERWRITE INTO TABLE busquedasXrutaXmes_tmp;" +
-					"set hive.exec.dynamic.partition.mode=nonstrict;" +
-					"FROM busquedasXrutaXmes_tmp tmp" +
-					"INSERT OVERWRITE TABLE busquedasXrutaXmes" +
-					"SELECT" +
-					"tmp.origen origen," +
-					"tmp.destino destino," +
-					"tmp.fecha fecha," +
-					"tmp.cantidad cantidad;" +
 					"LOAD DATA INPATH '/user/hive/warehouse/viajesdomesticoscr.db/sumaCompras" +
 					"' OVERWRITE INTO TABLE comprasXrutaXmes_tmp;" +
 					"set hive.exec.dynamic.partition.mode=nonstrict;" +
@@ -128,6 +109,8 @@ public class StartJobMain extends Configured implements Tool {
 					"on (compras.origen = busquedas.origen and compras.destino = busquedas.destino and compras.fecha = busquedas.fecha)" +
 					"group by compras.origen,compras.destino,compras.fecha" +
 					"order by compras.origen,compras.destino,compras.fecha");
+			//busquedasXrutaXmes
+			//sumaBusquedas
 		} catch (SQLException throwables) {
 			throwables.printStackTrace();
 		}
